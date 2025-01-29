@@ -1,4 +1,5 @@
 import axios from "axios";
+import { allCookiesAccepted, essentialCookiesAccepted, CookieConsentInitialised } from './events.js';
 
 class LaravelCookieConsent {
     config;
@@ -9,12 +10,18 @@ class LaravelCookieConsent {
 
     acceptAll() {
         return this.request(this.config['accept.all'])
-            .then((response) => this.addScripts(response.data));
+            .then((response) => {
+                allCookiesAccepted(response.data);
+                this.addScripts(response.data)
+            });
     }
 
     acceptEssentials() {
         return this.request(this.config['accept.essentials'])
-            .then((response) => this.addScripts(response.data));
+            .then((response) => {
+                essentialCookiesAccepted(response.data);
+                this.addScripts(response.data)
+            });
     }
 
     configure(data) {
@@ -86,4 +93,5 @@ class LaravelCookieConsent {
 
 window.addEventListener('load', () => {
     window.LaravelCookieConsent = new LaravelCookieConsent({ config: 1 });
+    CookieConsentInitialised();
 });
