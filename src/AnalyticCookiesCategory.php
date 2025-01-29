@@ -9,11 +9,10 @@ class AnalyticCookiesCategory extends CookiesCategory
     /**
      * Define Google Analytics cookies all at once.
      */
-    public function google(string $id, bool $anonymizeIp = true): static
+    public function google(string $id): static
     {
-        $this->group(function (CookiesGroup $group) use ($anonymizeIp, $id) {
+        $this->group(function (CookiesGroup $group) use ($id) {
             $key = str_starts_with($id, 'G-') ? substr($id, 2) : $id;
-            $anonymizeIp = $anonymizeIp === true ? 'true' : 'false';
 
             $group->name(static::GOOGLE_ANALYTICS)
                 ->cookie(fn(Cookie $cookie) => $cookie->name('_ga')
@@ -31,12 +30,6 @@ class AnalyticCookiesCategory extends CookiesCategory
                 ->cookie(fn(Cookie $cookie) => $cookie->name('_gat')
                     ->duration(1)
                     ->description(__('cookieConsent::cookies.defaults._gat'))
-                )
-                ->accepted(fn(Consent $consent) => $consent
-                    ->script('<script async src="https://www.googletagmanager.com/gtag/js?id=' . $id . '"></script>')
-                    ->script(
-                        '<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag(\'js\',new Date());gtag(\'config\',\'' . $id . '\', {\'anonymize_ip\':' . $anonymizeIp . '});</script>'
-                    )
                 );
         });
 
